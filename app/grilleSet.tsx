@@ -42,7 +42,7 @@ export default function ParametreGrille(){
     const handleAdd = (payload : any) => {
         db.transaction( tx => {
             tx.executeSql('INSERT INTO categories(categorie_name) values (?)', [payload], 
-              (obj, resultSet) => {console.log(resultSet.rows._array)}
+              (obj, resultSet) => {console.log(resultSet.rows._array)})
         });
     }
 
