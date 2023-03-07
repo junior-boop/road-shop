@@ -1,9 +1,12 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import * as screen from 'expo-splash-screen';
+import {SplashScreen,  Stack } from 'expo-router';
+import { useEffect, useCallback } from 'react';
+import store from '../gx/store/store'
+import GXProvider from '@dilane3/gx'
+
+screen.preventAutoHideAsync()
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -12,10 +15,11 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
+
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -26,26 +30,34 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+
+  useEffect(() =>{
+    loaded &&  screen.hideAsync()
+  }, [loaded])
+  
+
   return (
     <>
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
-      {!loaded && <SplashScreen />}
+      {!loaded && <SplashScreen/>}
       {loaded && <RootLayoutNav />}
     </>
   );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
 
   return (
     <>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <GXProvider store={store}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="liste" options={{ presentation: 'modal', animation : 'slide_from_left', headerShown: false}}  />
+          <Stack.Screen name="grilleSet" options={{ presentation: 'modal', animation : 'slide_from_bottom', headerShown : false}}  />
         </Stack>
-      </ThemeProvider>
+      </GXProvider>
+      
     </>
   );
 }
