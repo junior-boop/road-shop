@@ -1,4 +1,4 @@
-import {View, StyleSheet, Text, KeyboardAvoidingView,ScrollView, TextInput, Image} from 'react-native';
+import {View, StyleSheet, Text, KeyboardAvoidingView,ScrollView, TextInput, Image, Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Grille_Set_header } from '../components/header';
 import { Btn } from '../components/bouton';
@@ -28,20 +28,26 @@ export default function ParametreGrille(){
         db.transaction( tx => {
             tx.executeSql('SELECT * FROM categories', [], 
                 (obj, resultSet) => {
-                    console.log(resultSet.rows._array, 1);
                     setData(resultSet.rows._array)
                 }
             )
         })
 
         
-        console.log(categories, data)
-    }, [categorie])
+    }, [data])
 
 
     const handleAdd = (payload : any) => {
         db.transaction( tx => {
-            tx.executeSql('INSERT INTO categories(categorie_name) values (?)', [payload], 
+            tx.executeSql('INSERT INTO categories (categorie_name) values (?)', [payload], 
+              (obj, resultSet) => {console.log(resultSet.rows._array)})
+        });
+    }
+
+
+    const handleDelete = (id : any) => {
+        db.transaction( tx => {
+            tx.executeSql('DELETE FROM categories WHERE categorie_id = ?', [id], 
               (obj, resultSet) => {console.log(resultSet.rows._array)})
         });
     }
@@ -78,12 +84,14 @@ export default function ParametreGrille(){
                         justifyContent : 'center',
                         alignItems : 'center'
                     }} >
-                        <Btn onPress={() => create(categorie)}>
+                        <Btn onPress={() => handleAdd(categorie)}>
                             <Image source={require('../assets/images/P_icon.png')} />
                         </Btn>
                     </View>
                 </View>
-                <Text>{'rien'}</Text>
+                <View>
+                    { data.map((el, key) => (<Pressable key={key} onPress={() => handleDelete(el.categorie_id)}><Text >{`${el.categorie_name}`}</Text></Pressable>)) }
+                </View>
             </ScrollView>
         </SafeAreaView>
     )
