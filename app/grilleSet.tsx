@@ -6,6 +6,9 @@ import constante from '../constants/constante';
 import { useEffect, useState } from 'react';
 import { useSignal, useAction } from '@dilane3/gx'
 import * as SQLite from 'expo-sqlite'
+import { P } from '../components/StyledText';
+
+import { Feather } from '@expo/vector-icons';
 
 
 export default function ParametreGrille(){
@@ -38,10 +41,12 @@ export default function ParametreGrille(){
 
 
     const handleAdd = (payload : any) => {
+        console.log('je fonctionne')
         db.transaction( tx => {
             tx.executeSql('INSERT INTO categories (categorie_name) values (?)', [payload], 
               (obj, resultSet) => {console.log(resultSet.rows._array)})
         });
+        setCategorie('')
     }
 
 
@@ -89,10 +94,37 @@ export default function ParametreGrille(){
                         </Btn>
                     </View>
                 </View>
-                <View>
-                    { data.map((el, key) => (<Pressable key={key} onPress={() => handleDelete(el.categorie_id)}><Text >{`${el.categorie_name}`}</Text></Pressable>)) }
-                </View>
+                
+                    <View>
+                        { data.map((el, key) => <CategorieSet titre = {el.categorie_name} key={key} />) }
+                    </View>
+                
             </ScrollView>
         </SafeAreaView>
+    )
+}
+
+
+type CategorieSetProps = {
+    titre : string,
+    modify : () => void,
+    delete : () => void
+}
+
+function CategorieSet({titre} : CategorieSetProps){
+    return(
+        <View style = {{backgroundColor : 'silver', borderWidth : 1, borderColor : 'black'}}>
+            <View>
+                <Pressable>
+                    <View>
+                        <P>{titre}</P>
+                    </View>
+                </Pressable>
+                <View>
+                    <Feather name="more-vertical" size={24} color="black" />
+                </View>
+            </View>
+            <View></View>
+        </View>
     )
 }

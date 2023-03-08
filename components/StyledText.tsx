@@ -2,7 +2,6 @@ import { Text } from 'react-native'
 import AppLoading from 'expo-app-loading';
 import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 import constante from '../constants/constante';
-import { SplashScreen } from 'expo-router';
 
 import * as screen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -18,7 +17,7 @@ function useFontSetting(font : any){
   const [fontsLoaded, error] = useFonts({font})
 
   useEffect(() => {
-    fontsLoaded && screen.hideAsync()
+    fontsLoaded && screen.hideAsync();
     fontsLoaded && setElement(true)
   }, [fontsLoaded])
 
