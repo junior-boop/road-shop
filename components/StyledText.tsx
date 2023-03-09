@@ -30,33 +30,33 @@ function useFontSetting(font : any){
 }
 
 export function H1(props: TextProps) {
-  const font = useFontSetting(Montserrat_700Bold)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_700Bold', fontSize : constante.h1, letterSpacing : -1  }]} />
+  const [fontsLoaded] = useFonts({Montserrat_700Bold})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_700Bold', fontSize : constante.h1, letterSpacing : -1  }]} />
   return element;
 }
 export function H2(props: TextProps) {
-  const font = useFontSetting(Montserrat_600SemiBold)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h2 }]} />
+  const [fontsLoaded] = useFonts({Montserrat_600SemiBold})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h2 }]} />
   return element;
 }
 export function H3(props: TextProps) {
-  const font = useFontSetting(Montserrat_600SemiBold)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h3 }]} />
+  const [fontsLoaded] = useFonts({Montserrat_600SemiBold})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h3 }]} />
   return element;
 }
 export function H4(props: TextProps) {
   
-  const font = useFontSetting(Montserrat_600SemiBold)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h4 }]} />
+  const [fontsLoaded] = useFonts({Montserrat_600SemiBold})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.h4 }]} />
   return element;
 }
 export function H5(props: TextProps) {
-  const font = useFontSetting(Montserrat_600SemiBold)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.p_size }]} />
+  const [fontsLoaded] = useFonts({Montserrat_600SemiBold})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_600SemiBold', fontSize : constante.p_size }]} />
   return element;
 }
 export function P(props: TextProps) {
-  const font = useFontSetting(Montserrat_400Regular)
-  const element = !font ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_400Regular', fontSize : constante.p_size }]} />
+  const [fontsLoaded] = useFonts({Montserrat_400Regular})
+  const element = !fontsLoaded ? <AppLoading /> : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_400Regular', fontSize : constante.p_size }]} />
   return element;
 }

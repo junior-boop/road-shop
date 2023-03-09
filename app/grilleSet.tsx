@@ -4,57 +4,35 @@ import { Grille_Set_header } from '../components/header';
 import { Btn } from '../components/bouton';
 import constante from '../constants/constante';
 import { useEffect, useState } from 'react';
-import { useSignal, useAction } from '@dilane3/gx'
-import * as SQLite from 'expo-sqlite'
-import { P } from '../components/StyledText';
+import { useAction, useSignal } from '@dilane3/gx';
 
+
+import { P } from '../components/StyledText';
 import { Feather } from '@expo/vector-icons';
 
 
 export default function ParametreGrille(){
-    const db = SQLite.openDatabase('database.db')
 
-    const [categorie, setCategorie] = useState('');
+    const [categories, setCategorie] = useState<string>('');
     const [data, setData] = useState<any>([])
-    const [new_data, setnew_Data] = useState<any>([])
+    const [new_data, setnew_Data] = useState<string>('')
 
-    
-
-    
-    const categories = useSignal('categorie')
-
-    useEffect(() => {
-        db.transaction( tx => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS categories (categorie_id INTEGER PRIMARY KEY AUTOINCREMENT, categorie_name TEXT NOT NULL)')
-        } )
-
-        db.transaction( tx => {
-            tx.executeSql('SELECT * FROM categories', [], 
-                (obj, resultSet) => {
-                    setData(resultSet.rows._array)
-                }
-            )
-        })
-
-        
-    }, [data])
-
+    const categorie  =  useSignal('categorie')
+    const { create } = useAction('categorie')
 
     const handleAdd = (payload : any) => {
-        console.log('je fonctionne')
-        db.transaction( tx => {
-            tx.executeSql('INSERT INTO categories (categorie_name) values (?)', [payload], 
-              (obj, resultSet) => {console.log(resultSet.rows._array)})
-        });
+
+        const obj = {
+            categorie_name : payload,
+            categorie_id : 1
+        }
+        create(obj)
         setCategorie('')
     }
 
 
     const handleDelete = (id : any) => {
-        db.transaction( tx => {
-            tx.executeSql('DELETE FROM categories WHERE categorie_id = ?', [id], 
-              (obj, resultSet) => {console.log(resultSet.rows._array)})
-        });
+
     }
 
     return(
@@ -89,7 +67,7 @@ export default function ParametreGrille(){
                         justifyContent : 'center',
                         alignItems : 'center'
                     }} >
-                        <Btn onPress={() => handleAdd(categorie)}>
+                        <Btn onPress={() => handleAdd(categories)}>
                             <Image source={require('../assets/images/P_icon.png')} />
                         </Btn>
                     </View>
@@ -107,8 +85,8 @@ export default function ParametreGrille(){
 
 type CategorieSetProps = {
     titre : string,
-    modify : () => void,
-    delete : () => void
+    modify? : () => void,
+    delete? : () => void
 }
 
 function CategorieSet({titre} : CategorieSetProps){
