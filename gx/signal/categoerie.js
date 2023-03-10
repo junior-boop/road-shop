@@ -1,45 +1,26 @@
 import { createSignal } from '@dilane3/gx';
-import Vasern from 'vasern';
-
-export const VasernDB = new Vasern({
-    schemas : [
-        {
-            name : 'Categories',
-            props : {
-                categorie_name : 'string',
-                categorie_id : 'int'
-            }
-        },
-        {
-            name : 'Items',
-            props : {
-                item_name : 'string',
-                item_id : 'int',
-                parent : '#Categories',
-                assignedTo : '#Categories',
-                price : 'int',
-                sale_price : 'int'
-            }
-        }
-]})
+import DataCache from '../../database/schema';
 
 
-const { Categories } = VasernDB
+const db = new DataCache('Categories')
+const Items = new DataCache('Items')
 
 const CategorieSignal = createSignal({
   name: 'categorie',
-  state: 0,
+  state: '',
   actions: {
-    create: (state, payload) => {
-        console.log(payload)
-
-        const Data = Categories.insert(payload, save = true)
-        console.log(Data)
-        return state + 1;
+    create: async (state, payload) => {
+        state = await db.SetItem(payload)
+        return state ;
     },
 
     update: (state, payload) => {
       return state - payload
+    },
+
+    save_item : async (state, payload) => {
+        state = await Items.SetItem(payload)
+        return state ;
     }
   }
 });
