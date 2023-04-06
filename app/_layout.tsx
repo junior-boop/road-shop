@@ -3,8 +3,7 @@ import { useFonts } from 'expo-font';
 import * as screen from 'expo-splash-screen';
 import {SplashScreen,  Stack } from 'expo-router';
 import { useEffect, useCallback } from 'react';
-import store from '../gx/store/store'
-import GXProvider from '@dilane3/gx'
+import GlobalProvider from '../context/globalContext';
 
 screen.preventAutoHideAsync()
 
@@ -49,14 +48,15 @@ function RootLayoutNav() {
 
   return (
     <>
-      <GXProvider store={store}>
+      <GlobalProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="commandes" options={{ presentation: 'modal', headerShown: false }} />
           <Stack.Screen name="liste" options={{ presentation: 'modal', animation : 'slide_from_left', headerShown: false}}  />
           <Stack.Screen name="grilleSet" options={{ presentation: 'modal', animation : 'slide_from_bottom', headerShown : false}}  />
         </Stack>
-      </GXProvider>
+      </GlobalProvider>
       
     </>
   );

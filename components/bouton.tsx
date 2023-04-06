@@ -63,9 +63,11 @@ const Style = StyleSheet.create({
         width : 56,
         height : 56,
         borderRadius : constante.borderRadius_2,
-        backgroundColor : constante.color_secondary,
+        backgroundColor : 'white',
         alignItems : 'center',
-        justifyContent : 'center'
+        justifyContent : 'center',
+        borderWidth : 1, 
+        borderColor : constante.color_secondary,
     }, 
     large : {
         width : constante.width - 32,

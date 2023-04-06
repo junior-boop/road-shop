@@ -28,7 +28,9 @@ const Style = StyleSheet.create({
         width : 154, 
         height : 154,
         borderRadius : constante.borderRadius,
-        backgroundColor : constante.color_secondary,
+        backgroundColor : 'white',
+        borderWidth : 1, 
+        borderColor : constante.color_secondary,
         overflow : 'hidden',
         position : 'relative',
         padding : 12

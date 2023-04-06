@@ -3,7 +3,6 @@ import DataCache from '../../database/schema';
 
 
 const db = new DataCache('Categories')
-const Items = new DataCache('Items')
 
 const CategorieSignal = createSignal({
   name: 'categorie',
@@ -13,14 +12,12 @@ const CategorieSignal = createSignal({
         state = await db.SetItem(payload)
         return state ;
     },
-
+    getElement: async (state) => {
+      state = await db.GetItem()
+      return state
+    },
     update: (state, payload) => {
       return state - payload
-    },
-
-    save_item : async (state, payload) => {
-        state = await Items.SetItem(payload)
-        return state ;
     }
   }
 });

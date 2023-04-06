@@ -27,7 +27,7 @@ export default function TabOneScreen() {
         style = {{ position : 'relative',left : -16, width : '108.8%' }}
       >
         <View style  = {styles.bottomMenu}>
-          <Ongle image={require('../assets/images/S_icon.png')} url='/' titre='Commandes' />
+          <Ongle image={require('../assets/images/S_icon.png')} url='/commandes' titre='Commandes' />
           <Ongle image={require('../assets/images/C_icon.png')} url='/' titre='Dettes' />
           <Ongle image={require('../assets/images/S_O_C_icon.png')} url='/' titre='Stats' />
           <Ongle image={require('../assets/images/Prod_icon.png')} url='/' titre='Fournisseurs' />
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding : 16,
-    backgroundColor : 'white'
+    backgroundColor : constante.backgroundColor
   },
   btn_large : { 
     marginTop : 16, 
