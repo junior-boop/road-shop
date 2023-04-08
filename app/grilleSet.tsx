@@ -36,6 +36,10 @@ export default function ParametreGrille(){
 
     useEffect(() => {
         setCat(categories)
+    }, [categories])
+
+    useEffect(() => {
+        setCat(categories)
     }, [])
 
     return(

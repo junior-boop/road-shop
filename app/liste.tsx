@@ -90,8 +90,6 @@ export default function Liste() {
     const {categories, setCategories} = localCategories
     const { items } = localItems
 
-    console.log(localDb)
-
   return (
     <SafeAreaView style={styles.container}>
         <StatusBar style={'dark'} />

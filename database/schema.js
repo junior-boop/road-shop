@@ -7,6 +7,14 @@ export default class DataCache {
         this.#champ = champ;
     }
 
+    async InitItem(){
+        let data = []
+        const getItem = await AsyncStorage.getItem(`${this.#champ}`)
+        if(getItem === null){
+            await AsyncStorage.setItem(`${this.#champ}`, JSON.stringify(data))
+        }
+    }
+
     async SetItem(element) {
         let data = []
         const getItem = await AsyncStorage.getItem(`${this.#champ}`)
@@ -26,7 +34,6 @@ export default class DataCache {
 
     async GetItem() {
         let value =  await AsyncStorage.getItem(`${this.#champ}`)
-        console.log('1', value)
         return value
     }
 

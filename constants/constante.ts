@@ -1,6 +1,7 @@
 import { Dimensions } from "react-native";
 
 const _w = Dimensions.get('screen').width
+const _h = Dimensions.get('screen').height
 
 export default {
     borderRadius : 18,
@@ -14,6 +15,7 @@ export default {
     p_size : 18,
 
     width : _w,
+    height: _h,
     backgroundColor : '#F6F6F6',
 
     color_primary : '#004CFF',
@@ -24,7 +26,7 @@ export default {
     color_primary_90 : '#3370FF',
     color_primary_130 : '#003DCC',
     color_primary_150 : '#001E66',
-    color_secondary : '#f3f3f3',
+    color_secondary : '#f1f1f1',
 
     color_gray : '#191919',
     color_gray_primary : '#747474',
