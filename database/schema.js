@@ -34,6 +34,11 @@ export default class DataCache {
 
     async GetItem() {
         let value =  await AsyncStorage.getItem(`${this.#champ}`)
+        if(value === null){
+            await AsyncStorage.setItem(`${this.#champ}`, JSON.stringify([]))
+            return value
+        }
+
         return value
     }
 

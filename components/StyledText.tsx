@@ -39,6 +39,6 @@ export function P(props: TextProps) {
 }
 export function Display(props: TextProps) {
   const [fontsLoaded] = useFonts({Montserrat_200ExtraLight})
-  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 36 }]} />
+  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 28 }]} />
   return element;
 }
