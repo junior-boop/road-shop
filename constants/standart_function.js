@@ -1,12 +1,15 @@
 export function ArrayOf({table, number}){
-    const obj = {}
+    let obj = {}
     obj.suiteNormal = []
     obj.suiteInverse = []
 
-    for(let i = 0; i < number; i++){
-        obj.suiteNormal.push(table[i])
-        obj.suiteInverse.push(table[number - i])
-    }
+    const checkNumber = number > table.length ? table.length : number
 
+    for(let i = 0; i < checkNumber; i++){
+        if( table[i] !== undefined){
+            obj.suiteNormal.push(table[i])
+            obj.suiteInverse.push(table[checkNumber - i])
+        }
+    }
     return obj
 }

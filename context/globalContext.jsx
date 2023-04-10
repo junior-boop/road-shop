@@ -50,7 +50,8 @@ export default function GlobalProvider({ children }) {
 
     const [listProductModal, setListProductModal] = useState({
         state: false,
-        userid: ''
+        userid: '',
+        commandeid : ''
     }),
         ListProductsModal = {
             listProductModal,
@@ -70,11 +71,16 @@ export default function GlobalProvider({ children }) {
     }
 
     const SetLocalUser = async (payload) => {
+
         const { userid } = payload
         const includes = user.includes(userid)
+
+        console.log(payload)
+
         if(includes){
             setUser(user)
         } else {
+
             await User.SetItem(payload).then(d => {
                 setUser(d)
             })
@@ -130,6 +136,12 @@ export default function GlobalProvider({ children }) {
         })
     }
 
+    const InitDataBase = async (database) => {
+        await database.Neutre([]).then((d) => {
+            console.log(d)
+        })
+    } 
+
     useEffect(() => {
         Items.GetItem().then(d => {
             const toJSon = JSON.parse(d)
@@ -155,6 +167,7 @@ export default function GlobalProvider({ children }) {
             const toJSon = JSON.parse(d)
             setCommandItems(toJSon)
         })
+
 
     }, [])
 

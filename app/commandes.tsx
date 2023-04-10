@@ -180,10 +180,11 @@ function ModalCommande() {
                     <Ionicons name="close" size={24} color="black" />
                 </Pressable>
             </View>
-            <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 12 }}>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 16, }}>
                 {
                     categories && categories.map((el: any, key: number) => (<CategorieItems name={el.categorie_name} id={el.categorie_id} items={items} key={key} />))
                 }
+                <View style = {{ height : 16 }} />
             </ScrollView>
         </Animated.View>
     )
@@ -267,8 +268,7 @@ function NewUser({ onPress, value, onChange }: NewUserProp) {
     const { localUser } = localDb
     const { user, setUser } = localUser
 
-    const Data = ArrayOf({table : user, number : 5 }).suiteInverse
-
+    const Data = ArrayOf({table : user, number : 7 }).suiteNormal
 
     return (
         <KeyboardAvoidingView>
