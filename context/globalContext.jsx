@@ -75,8 +75,6 @@ export default function GlobalProvider({ children }) {
         const { userid } = payload
         const includes = user.filter(el => el.userid === userid)
 
-        console.log("1", includes)
-
         if(includes.length > 0){
             setUser(user)
         } else {
