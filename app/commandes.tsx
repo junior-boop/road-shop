@@ -26,6 +26,7 @@ export default function Commandes() {
     const { localUser, localCommande } = localDb
     const {addUser, setAddUser} = AddUser
     const [value, setValue] = useState('')
+    const [state, setState] = useState(false)
 
     const { user } = localUser
     const { command, setCommand } = localCommande
@@ -52,9 +53,23 @@ export default function Commandes() {
         setValue('')
     }
 
+    const Close = () => {
+        setAddUser(!addUser)
+    }
+
     useEffect(() => {
         setAddUser(true)
     }, [])
+
+
+    useEffect(() => {
+        if(value.length <= 1){
+            setState(false)
+        } else {
+            setState(true)
+        }
+    }, [value])
+
 
     const Com = ({ Client }: ClientProp) => {
         return (
@@ -86,8 +101,10 @@ export default function Commandes() {
                     </Pressable>)
                     : (<NewUser
                         onPress={handleAddUser}
+                        onClose={Close}
                         value={value}
                         onChange={setValue}
+                        btnState = {state}
                     />)
             }
             <ModalCommande />
@@ -97,7 +114,7 @@ export default function Commandes() {
 
 function ModalCommande() {
 
-    const { localDb, ListProductsModal } = useGlobalContext()
+    const { localDb, ListProductsModal, SetLocalCommandeItems } = useGlobalContext()
     const { localItems, localUser, localCategories } = localDb
     const { user } = localUser
     const { items } = localItems
@@ -123,6 +140,7 @@ function ModalCommande() {
             useNativeDriver: false,
         }).start()
     }
+
 
     useEffect(() => {
         listProductModal.state
@@ -154,12 +172,27 @@ function ModalCommande() {
 
         const filtrer = items && items.filter((el : any) =>  el.categorie_id === id)
 
+        const handleCommandeItems = (item) => {
+            const commandesItem = {
+                commandeid : listProductModal.commandeid,
+                userid : listProductModal.userid,
+                item : item, 
+                madeAt : Date.now(),
+                commandeitemid : generated_ID(),
+                state : 1,
+                amount : parseInt(item.item_price)
+            }
+            
+            SetLocalCommandeItems(commandesItem)
+            setListProductModal((prev: any) => ({ ...prev, state: false }))
+        }
+        
         return(
             <View>
                 <P style = {{ paddingVertical : 12}}>{name}</P>
                 {
                     filtrer && filtrer.map((el: any, key: number) => (
-                        <Pressable key={key} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 12, backgroundColor: constante.color_secondary, marginBottom: 5, borderRadius: 5 }}>
+                        <Pressable onPress = {() => handleCommandeItems(el)} key={key} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 12, backgroundColor: constante.color_secondary, marginBottom: 5, borderRadius: 5 }}>
                             <P>{el.item_name}</P>
                             <P>{el.item_price} XAF</P>
                         </Pressable>))
@@ -174,7 +207,7 @@ function ModalCommande() {
             <View style={{ flexDirection: 'row', marginHorizontal: 16, paddingVertical: 12, alignItems: 'center', justifyContent: 'space-between' }}  >
                 <View>
                     <P>Commande pour</P>
-                    <H2>{clientName}</H2>
+                    <H2>{clientName} - {listProductModal.commandeid}</H2>
                 </View>
                 <Pressable onPress={CloseBtn} style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: constante.color_secondary }}>
                     <Ionicons name="close" size={24} color="black" />
@@ -195,8 +228,9 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
     const [display, setDisplay] = useState('none')
 
     const { localDb, SupprimerCommade, ListProductsModal } = useGlobalContext()
-    const { localItems, localUser } = localDb
+    const { localUser, localCommandeItems } = localDb
     const { user } = localUser
+    const { commandItems } = localCommandeItems
 
     const { listProductModal, setListProductModal } = ListProductsModal
 
@@ -207,10 +241,26 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
     }, [more])
 
     const handleAjoute = () => {
-        setListProductModal({ state: true, userid: user_id })
+        setListProductModal({ state: true, userid: user_id, commandeid : id })
     }
 
     const name = user && user.filter((el : any) => el.userid === user_id)
+    const commandeUser = commandItems && commandItems.filter((el : any) => el.commandeid === id)
+
+
+    const ListeCommandeItems = () => {
+
+        
+
+        return(
+            <>
+                {
+                commandeUser 
+                && commandeUser.map((el: any, key : number ) => <CommandeItemForUser commandeitemid={el.commandeitemid} item_name = {el.item.item_name} item_price= {el.item.item_price} item_price_de_gros= {el.item.item_price_de_gros} key={key} /> )
+                }
+            </>
+        )
+    }
 
     return (
         <View style={{
@@ -244,25 +294,101 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
                     </View>
                 </Animated.View>
             </View>
-            <View>
-                <View style={{ paddingVertical: 16, justifyContent: 'center', alignItems: 'center' }}>
-                    <P>Aucune commande</P>
-                    <Pressable onPress={handleAjoute} style={{ paddingVertical: 7, paddingHorizontal: 12, backgroundColor: constante.color_primary_10, borderRadius: 5, marginTop: 10 }}>
-                        <P style={{ color: constante.color_primary_130 }}>Nouvelle Gout</P>
-                    </Pressable>
-                </View>
+            <View style={{ paddingHorizontal : 10, paddingVertical : 5 }}>
+                {
+                    commandeUser.length > 0 
+                    ? <ListeCommandeItems />
+                    : (<View style={{ paddingVertical: 16, justifyContent: 'center', alignItems: 'center' }}>
+                        <P>Aucune commande</P>
+                        <Pressable onPress={handleAjoute} style={{ paddingVertical: 7, paddingHorizontal: 12, backgroundColor: constante.color_primary_10, borderRadius: 5, marginTop: 10 }}>
+                            <P style={{ color: constante.color_primary_130 }}>Nouvelle Gout</P>
+                        </Pressable>
+                    </View>) 
+                }
             </View>
         </View>
     )
 }
 
+
+function CommandeItemForUser({ item_name = 'ville', item_price = '650', commandeitemid, item_price_de_gros = '600' }){
+    const [nombre, setNombre] = useState(1)
+    const [prix, setPrix] = useState()
+    const [itemOpen, setItemOpen] = useState(false)
+
+    const { SupprimerCommadeItems } = useGlobalContext()
+    
+    let NewSolde = nombre * parseInt(item_price)
+    let NewGros = nombre * parseInt(item_price)
+    
+    const HeightValue = useRef(new Animated.Value(48)).current
+    const SwitchOn = () => {
+        Animated.timing(HeightValue, {
+            toValue: 100,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+    const SwitchOff = () => {
+        Animated.timing(HeightValue, {
+            toValue: 48,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    useEffect(() => {
+        itemOpen
+        ? SwitchOn()
+        : SwitchOff()
+    }, [itemOpen])
+
+    const handleValidation = () => {
+       setItemOpen(false)
+    }
+
+    return(
+        <Animated.View style = {{ height : HeightValue, borderColor : constante.color_primary_10, borderWidth : 1, borderRadius : 5 , marginBottom : 5, overflow : 'hidden' }}>
+            <Pressable onPress={() => setItemOpen(!itemOpen)} style = {{ height : 48, flexDirection : 'row', alignItems : 'center', justifyContent : 'space-between', paddingHorizontal : 4}}>
+                <P style = {{ paddingLeft : 5}}>{item_name}</P>
+                <View style={{ height : 38, width: 115 ,borderRadius : 3, backgroundColor : constante.color_primary_10, flexDirection : 'row', alignItems : 'center' }}>
+                    <P style={{ width : 38, height : 24, borderRightColor : constante.color_primary_50, borderRightWidth : 1, textAlign : 'center', verticalAlign : 'middle' }}> {nombre} </P>
+                    <P style={{ width : 70, height : 24, textAlign : 'right', verticalAlign : 'middle', paddingRight : 5 }}>{NewSolde} F</P>
+                </View>
+            </Pressable>
+            <View style = {{ height : 48, flexDirection : 'row-reverse', alignItems : 'center', justifyContent : 'space-between', paddingHorizontal : 4}}>
+                <View style = {{gap : 5, flexDirection : 'row', alignItems : 'center'}}>
+                    <Pressable onPress={() => setNombre(nombre - 1)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}}>
+                        <Ionicons name="ios-remove" size={24} color="black" />
+                    </Pressable>
+                    <Pressable onPress={() => setNombre(nombre + 1)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}}>
+                        <Ionicons name="ios-add" size={24} color="black" />
+                    </Pressable>
+                </View>
+                <View style = {{gap : 5, flexDirection : 'row-reverse', alignItems : 'center'}}>
+                    <Pressable onPress = {() => SupprimerCommadeItems(commandeitemid)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}} >
+                        <Ionicons name="ios-trash-outline" size={18} color="black" />
+                    </Pressable>
+                    <Pressable onPress={handleValidation} style = {{height : 38, gap : 5, flexDirection : 'row', alignItems : 'center', justifyContent : 'center', width : 75, backgroundColor : '#c1ffde', borderRadius : 5 }}>
+                        <P>Valid</P>
+                        <Ionicons name="checkmark" size={18} color="black" />
+                    </Pressable>
+                </View>
+            </View>
+        </Animated.View>
+    )
+}
+
+
 type NewUserProp = {
     onPress: () => void,
     value?: string,
-    onChange?: (text: string) => void
+    onChange?: (text: string) => void,
+    btnState : boolean,
+    onClose? : () => void 
 }
 
-function NewUser({ onPress, value, onChange }: NewUserProp) {
+function NewUser({ onPress, value, onChange, btnState, onClose }: NewUserProp) {
 
     const { localDb } = useGlobalContext()
     const { localUser } = localDb
@@ -292,10 +418,17 @@ function NewUser({ onPress, value, onChange }: NewUserProp) {
                         value={value}
                         onChangeText={onChange}
                         autoFocus={true}
-                        placeholder='Nom du Client' />
-                    <Pressable onPress={onPress} style={{ height: 56, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
-                        <Ionicons name="ios-checkmark-sharp" size={24} color={constante.color_primary} />
-                    </Pressable>
+                        placeholder='Nom du Client' 
+                    />
+                    {
+                        btnState 
+                        ? (<Pressable onPress={onPress} style={{ height: 56, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
+                                <Ionicons name="ios-checkmark-sharp" size={24} color={constante.color_primary} />
+                            </Pressable>)
+                        : (<Pressable onPress={onClose} style={{ height: 56, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
+                                <Ionicons name="close" size={24} color={constante.color_primary} />
+                            </Pressable>)
+                    }
                 </View>
             </View>
         </KeyboardAvoidingView>

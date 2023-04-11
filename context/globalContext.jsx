@@ -73,14 +73,13 @@ export default function GlobalProvider({ children }) {
     const SetLocalUser = async (payload) => {
 
         const { userid } = payload
-        const includes = user.includes(userid)
+        const includes = user.filter(el => el.userid === userid)
 
-        console.log(payload)
+        console.log("1", includes)
 
-        if(includes){
+        if(includes.length > 0){
             setUser(user)
         } else {
-
             await User.SetItem(payload).then(d => {
                 setUser(d)
             })
@@ -123,18 +122,26 @@ export default function GlobalProvider({ children }) {
 
     const SupprimerCommade = async (id) => {
         const NewCommands = command.filter(el => el.commandeid !== id)
+        const NewCommandItems = commandItems.filter(el => el.commandeid !== id)
+        
         await Commandes.Neutre(NewCommands).then((d) => {
             setCommand(d)
         })
-    }
-
-    const SupprimerCommadeItems = async (id) => {
-        const NewCommandItems = commandItems.filter(el => el.userid !== id)
 
         await CommandesItems.Neutre(NewCommandItems).then((d) => {
             setCommandItems(d)
         })
     }
+
+    const SupprimerCommadeItems = async (id) => {
+        const NewCommandItems = commandItems.filter(el => el.commandeitemid !== id)
+        
+        await CommandesItems.Neutre(NewCommandItems).then((d) => {
+            setCommandItems(d)
+        })
+    }
+
+   
 
     const InitDataBase = async (database) => {
         await database.Neutre([]).then((d) => {
@@ -168,7 +175,6 @@ export default function GlobalProvider({ children }) {
             setCommandItems(toJSon)
         })
 
-
     }, [])
 
     const localDb = { localCategories, localItems, localUser, localCommande, localCommandeItems }
@@ -184,8 +190,8 @@ export default function GlobalProvider({ children }) {
             SetLocalCommande,
             SetLocalCommandeItems,
             SupprimerUser,
-            SupprimerCategorie,
             SupprimerCommade,
+            SupprimerCategorie,
             SupprimerCommadeItems,
             CreateThatDay
         }}>
