@@ -42,15 +42,15 @@ export default class DataCache {
         return value
     }
 
-    async UpdateItem(id, element) {
+    async UpdateItem(id_name, id, element) {
         const data = JSON.parse(await AsyncStorage.getItem(`${this.#champ}`))
         const index = data.findIndex((d) => {
-            return d.id === id
+            return d[id_name] === id
         })
 
         if (element === '' || element === null || element === undefined) throw new Error("Il manque l'element a Update")
-        const items = D.fill(element, index, index + 1)
-        this.SetItem = element
+        const items = data.fill(element, index, index + 1)
+        await AsyncStorage.setItem(`${this.#champ}`, JSON.stringify(items))
         return items
     }
 

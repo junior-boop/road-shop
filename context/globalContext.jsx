@@ -96,6 +96,21 @@ export default function GlobalProvider({ children }) {
         })
     }
 
+
+
+    const UpdateLocalCommandeItemId = async (id_name, id, payload) => {
+
+        const index = commandItems.findIndex((d) => {
+            return d[id_name] === id
+        })
+        const items = commandItems.fill(payload, index, index + 1)
+        setCommandItems(items)
+
+        await CommandesItems.UpdateItem(id_name, id, payload).then((d) => {
+            console.log('1', d)
+        })
+    }
+
     
     const SupprimerCategorie = async (id) => {
         const NewCat = categories.filter(el => el.categorie_id !== id)
@@ -191,6 +206,7 @@ export default function GlobalProvider({ children }) {
             SupprimerCommade,
             SupprimerCategorie,
             SupprimerCommadeItems,
+            UpdateLocalCommandeItemId,
             CreateThatDay
         }}>
             {children}

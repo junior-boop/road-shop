@@ -32,3 +32,6 @@ export default {
     color_gray_primary : '#747474',
     color_gray_second : "#C4C4C4"
 }
+
+// e5fff1 vert-blanc
+// ffe5e5 reouge-blanc

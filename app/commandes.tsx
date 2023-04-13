@@ -226,6 +226,7 @@ function ModalCommande() {
 function CommandesItems({ user_id, id }: CommandesItemsProps) {
     const [more, setMore] = useState(false)
     const [display, setDisplay] = useState('none')
+    const [totalAmount, setTotalAmount] = useState(0)
 
     const { localDb, SupprimerCommade, ListProductsModal } = useGlobalContext()
     const { localUser, localCommandeItems } = localDb
@@ -248,15 +249,26 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
     const commandeUser = commandItems && commandItems.filter((el : any) => el.commandeid === id)
 
 
-    const ListeCommandeItems = () => {
+    useEffect(() => {
+        const amount = commandeUser.reduce((a, b) => a.amount + b.amount)
+        if(commandeUser.length === 1){
+            setTotalAmount(commandeUser[0].amount)
+        }
+        if(typeof amount === 'number' ){
+            setTotalAmount(amount)
+            console.log('q', amount)
+        }
 
         
+    }, [commandItems])
 
+
+    const ListeCommandeItems = () => {
         return(
             <>
                 {
                 commandeUser 
-                && commandeUser.map((el: any, key : number ) => <CommandeItemForUser commandeitemid={el.commandeitemid} item_name = {el.item.item_name} item_price= {el.item.item_price} item_price_de_gros= {el.item.item_price_de_gros} key={key} /> )
+                && commandeUser.map((el: any, key : number ) => <CommandeItemForUser commandeitemid={el.commandeitemid} item_name = {el.item.item_name} item_price= {el.item.item_price} item_price_de_gros= {el.item.item_price_de_gros} state = {el.state} key={key}  /> )
                 }
             </>
         )
@@ -277,11 +289,16 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
                         <H3 style={{ color: 'black' }}>{name[0].name}</H3>
                     </View>
                 </Pressable>
-                <Pressable onPress={() => setMore(!more)}>
-                    <Animated.View style={{ width: 42, height: 42, alignItems: 'center', justifyContent: 'center', backgroundColor: `transparent`, borderRadius: 40 }}>
-                        <Ionicons name="ios-ellipsis-vertical" size={24} color="black" />
-                    </Animated.View>
-                </Pressable>
+                <View style = {{ flexDirection : 'row', alignItems : 'center' }}>
+                    <View style = {{ height : 38, minWidth : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center', backgroundColor : '#e5fff1', paddingHorizontal : 10  }}>
+                        <P>{totalAmount}</P>
+                    </View>
+                    <Pressable onPress={() => setMore(!more)}>
+                        <Animated.View style={{ width: 42, height: 42, alignItems: 'center', justifyContent: 'center', backgroundColor: `transparent`, borderRadius: 40 }}>
+                            <Ionicons name="ios-ellipsis-vertical" size={24} color="black" />
+                        </Animated.View>
+                    </Pressable>
+                </View>
 
                 <Animated.View style={{ position: 'absolute', top: 35, right: 5, width: 220, height: 84, backgroundColor: 'white', zIndex: 10, elevation: 2, borderRadius: 5, display: display }}>
                     <View>
@@ -311,17 +328,23 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
 }
 
 
-function CommandeItemForUser({ item_name = 'ville', item_price = '650', commandeitemid, item_price_de_gros = '600' }){
-    const [nombre, setNombre] = useState(1)
+function CommandeItemForUser({ item_name = 'ville', item_price = '650', commandeitemid = '', item_price_de_gros = '600', state = 1 }){
+    const { SupprimerCommadeItems, UpdateLocalCommandeItemId, localDb } = useGlobalContext()
+    const { commandItems } = localDb.localCommandeItems
+    const filter = commandItems.filter( el => el.commandeitemid === commandeitemid)
+
+
+    const [nombre, setNombre] = useState(state)
+    const [items, setItems] = useState({...filter[0]})
     const [prix, setPrix] = useState()
     const [itemOpen, setItemOpen] = useState(false)
 
-    const { SupprimerCommadeItems } = useGlobalContext()
+
     
     let NewSolde = nombre * parseInt(item_price)
     let NewGros = nombre * parseInt(item_price)
     
-    const HeightValue = useRef(new Animated.Value(48)).current
+    const HeightValue = useRef(new Animated.Value(50)).current
     const SwitchOn = () => {
         Animated.timing(HeightValue, {
             toValue: 100,
@@ -331,7 +354,7 @@ function CommandeItemForUser({ item_name = 'ville', item_price = '650', commande
     }
     const SwitchOff = () => {
         Animated.timing(HeightValue, {
-            toValue: 48,
+            toValue: 50,
             duration: 300,
             useNativeDriver: false,
         }).start()
@@ -343,8 +366,21 @@ function CommandeItemForUser({ item_name = 'ville', item_price = '650', commande
         : SwitchOff()
     }, [itemOpen])
 
-    const handleValidation = () => {
-       setItemOpen(false)
+
+    // useEffect(() => {
+    //     // UpdateLocalCommandeItemId('commandeitemid', commandeitemid, items)
+    //     console.log(items)
+    // }, [items])
+
+    const handlePlus = () => {
+        const obj = {
+            ...items, 
+            state : nombre + 1, 
+            amount : (nombre + 1) * parseInt(item_price),
+            updateItemsAt : new Date()
+        }
+        setNombre(nombre + 1)
+        UpdateLocalCommandeItemId('commandeitemid', commandeitemid, obj)
     }
 
     return(
@@ -361,17 +397,13 @@ function CommandeItemForUser({ item_name = 'ville', item_price = '650', commande
                     <Pressable onPress={() => setNombre(nombre - 1)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}}>
                         <Ionicons name="ios-remove" size={24} color="black" />
                     </Pressable>
-                    <Pressable onPress={() => setNombre(nombre + 1)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}}>
+                    <Pressable onPress={handlePlus} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}}>
                         <Ionicons name="ios-add" size={24} color="black" />
                     </Pressable>
                 </View>
                 <View style = {{gap : 5, flexDirection : 'row-reverse', alignItems : 'center'}}>
-                    <Pressable onPress = {() => SupprimerCommadeItems(commandeitemid)} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center'}} >
-                        <Ionicons name="ios-trash-outline" size={18} color="black" />
-                    </Pressable>
-                    <Pressable onPress={handleValidation} style = {{height : 38, gap : 5, flexDirection : 'row', alignItems : 'center', justifyContent : 'center', width : 75, backgroundColor : '#c1ffde', borderRadius : 5 }}>
-                        <P>Valid</P>
-                        <Ionicons name="checkmark" size={18} color="black" />
+                    <Pressable onPress = {() => SupprimerCommadeItems(commandeitemid )} style = {{ height : 38, width : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center', backgroundColor : '#ffe5e5'}} >
+                        <Ionicons name="ios-trash-outline" size={18} color="#ea0000" />
                     </Pressable>
                 </View>
             </View>
