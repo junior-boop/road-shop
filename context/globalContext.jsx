@@ -58,6 +58,19 @@ export default function GlobalProvider({ children }) {
             setListProductModal
         }
 
+    const [optionalModal, setOptionalModal] = useState({
+        state: false,
+        userid: '',
+        commandeid : ''
+    }),
+        OptionalModalConfig = {
+            optionalModal,
+            setOptionalModal
+        }
+
+
+
+        
     const SetCategoriesDB = async (payload) => {
         await Categories.SetItem(payload).then(d => {
             setCategories(d)
@@ -188,6 +201,8 @@ export default function GlobalProvider({ children }) {
             setCommandItems(toJSon)
         })
 
+        // InitDataBase(CommandesItems)
+
     }, [])
 
     const localDb = { localCategories, localItems, localUser, localCommande, localCommandeItems }
@@ -196,6 +211,7 @@ export default function GlobalProvider({ children }) {
         <GlobalContext.Provider value={{
             localDb,
             ListProductsModal,
+            OptionalModalConfig,
             AddUser,
             SetCategoriesDB,
             SetItemsDB,

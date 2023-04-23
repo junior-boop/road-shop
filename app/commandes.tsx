@@ -3,8 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ScrollView, Pressable, Animated, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header_Page } from '../components/header';
-import { Display, H2, H3, P } from '../components/StyledText';
-import { useGlobalContext } from '../context/globalContext';
+import { Display, Display_2, H2, H3, P } from '../components/StyledText';
+import GlobalProvider, { useGlobalContext } from '../context/globalContext';
 import constante from '../constants/constante';
 import { Ionicons } from '@expo/vector-icons';
 import generated_ID from '../constants/id_gen';
@@ -108,8 +108,76 @@ export default function Commandes() {
                     />)
             }
             <ModalCommande />
+            <ModalOption />
         </SafeAreaView>
     );
+}
+
+
+function ModalOption() {
+    const { OptionalModalConfig } = useGlobalContext()
+    const { optionalModal, setOptionalModal } = OptionalModalConfig
+
+    const [display, setDisplay] = useState('none')
+
+    const HeightValue = useRef(new Animated.Value(0)).current
+    const SwitchOn = () => {
+        Animated.timing(HeightValue, {
+            toValue: 700,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+    const SwitchOff = () => {
+        Animated.timing(HeightValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    } 
+
+    const CloseModal = () => {
+        setDisplay('none')
+    }
+
+    useEffect(() => {
+        if(optionalModal.state){
+            setDisplay('flex')
+        } else {
+            setDisplay('none')
+        }
+    }, [])
+
+    return(
+        <View style  = {{ position : 'absolute', top : 0, left :0, zIndex : 20, width : constante.width, height : constante.height, display : display}}>
+            <View style = {{ backgroundColor : '#0004', flex : 1}} />
+            <Animated.View style = {{ height : 350, width : '100%', backgroundColor : 'white', elevation : 10}}>
+                <Pressable onPress={CloseModal} style  = {{ flexDirection : 'row', alignItems : 'center', justifyContent : 'space-between', paddingHorizontal : 16, paddingVertical : 12}}>
+                    <H2>Monsieur Etame</H2>
+                    <View style = {{ flexDirection : 'row', alignItems : 'center', gap :10, }}>
+                        <Display style = {{color : constante.color_primary_130 }}>2300 F</Display>
+                        <Pressable style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: constante.color_secondary }}>
+                            <Ionicons name="close" size={24} color="black" />
+                        </Pressable>
+                    </View>
+                </Pressable>
+                <View style = {{ paddingHorizontal : 16}}>
+                    <Pressable style  = {{ height : 52, justifyContent : 'center', borderBottomColor : constante.color_secondary, borderBottomWidth : 1}}>
+                        <P>Ajouter un produit </P>
+                    </Pressable>
+                    <Pressable style  = {{ height : 52, justifyContent : 'center', borderBottomColor : constante.color_secondary, borderBottomWidth : 1}}>
+                        <P>Supprimer la commande </P>
+                    </Pressable>
+                    <Pressable style  = {{ height : 52, justifyContent : 'center', borderBottomColor : constante.color_secondary, borderBottomWidth : 1}}>
+                        <P>Commande Soldé </P>
+                    </Pressable>
+                    <Pressable style  = {{ height : 52, justifyContent : 'center'}}>
+                        <P>Avance sur paiement</P>
+                    </Pressable>
+                </View>
+            </Animated.View>
+        </View>
+    )
 }
 
 function ModalCommande() {
@@ -228,12 +296,13 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
     const [display, setDisplay] = useState('none')
     const [totalAmount, setTotalAmount] = useState(0)
 
-    const { localDb, SupprimerCommade, ListProductsModal } = useGlobalContext()
+    const { localDb, SupprimerCommade, ListProductsModal, OptionalModalConfig } = useGlobalContext()
     const { localUser, localCommandeItems } = localDb
     const { user } = localUser
     const { commandItems } = localCommandeItems
 
     const { listProductModal, setListProductModal } = ListProductsModal
+    const { optionalModal, setOptionalModal } = OptionalModalConfig
 
     useEffect(() => {
         more
@@ -245,22 +314,25 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
         setListProductModal({ state: true, userid: user_id, commandeid : id })
     }
 
+    const openOptionalModal = () => {
+        setOptionalModal({ state: true, userid: user_id, commandeid : id })
+    }
+
     const name = user && user.filter((el : any) => el.userid === user_id)
     const commandeUser = commandItems && commandItems.filter((el : any) => el.commandeid === id)
 
 
     useEffect(() => {
-        const amount = commandeUser.reduce((a, b) => a.amount + b.amount)
+        const amount = commandeUser && commandeUser.reduce((a, b) => a.amount + b.amount)
         if(commandeUser.length === 1){
             setTotalAmount(commandeUser[0].amount)
         }
         if(typeof amount === 'number' ){
             setTotalAmount(amount)
-            console.log('q', amount)
         }
 
         
-    }, [commandItems])
+    }, [commandeUser])
 
 
     const ListeCommandeItems = () => {
@@ -293,7 +365,7 @@ function CommandesItems({ user_id, id }: CommandesItemsProps) {
                     <View style = {{ height : 38, minWidth : 38, borderRadius : 5, alignItems : 'center', justifyContent : 'center', backgroundColor : '#e5fff1', paddingHorizontal : 10  }}>
                         <P>{totalAmount}</P>
                     </View>
-                    <Pressable onPress={() => setMore(!more)}>
+                    <Pressable onPress={openOptionalModal}>
                         <Animated.View style={{ width: 42, height: 42, alignItems: 'center', justifyContent: 'center', backgroundColor: `transparent`, borderRadius: 40 }}>
                             <Ionicons name="ios-ellipsis-vertical" size={24} color="black" />
                         </Animated.View>

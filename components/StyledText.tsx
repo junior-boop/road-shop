@@ -39,6 +39,16 @@ export function P(props: TextProps) {
 }
 export function Display(props: TextProps) {
   const [fontsLoaded] = useFonts({Montserrat_200ExtraLight})
-  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 28 }]} />
+  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 32 }]} />
+  return element;
+}
+export function Display_2(props: TextProps) {
+  const [fontsLoaded] = useFonts({Montserrat_200ExtraLight})
+  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 24 }]} />
+  return element;
+}
+export function Display_3(props: TextProps) {
+  const [fontsLoaded] = useFonts({Montserrat_200ExtraLight})
+  const element = !fontsLoaded ? null : <Text {...props} style={[props.style, { fontFamily: 'Montserrat_200ExtraLight', fontSize : 18 }]} />
   return element;
 }
